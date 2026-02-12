@@ -59,7 +59,7 @@ python-tests: (test-python "3.6") (test-python "3.7") (test-python "3.8") (test-
 test-alpine version="latest": (_run-test ("docker.io/alpine:" + version) apk-setup)
 
 # Test all supported alpine versions
-alpine-tests: (test-alpine "3.19") (test-alpine "3.20") (test-alpine "3.21") (test-alpine "3.22")
+alpine-tests: (test-alpine "3.20") (test-alpine "3.21") (test-alpine "3.22") (test-alpine "3.23")
 
 _test-apt image="debian:latest": (_run-test image apt-setup)
 

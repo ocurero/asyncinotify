@@ -65,7 +65,7 @@ This is supported and tested on the following:
 * Ubuntu 20.04, 22.04, and 24.04
 * Fedora 42 and 43
 * Alma Linux 8, 9 and 10 (Should be equivalent to RHEL)
-* Alpine Linux 3.19 through 3.22
+* Alpine Linux 3.20 through 3.23
 
 We regularly remove out-of-support OSes from the tests and add new releases.
 
