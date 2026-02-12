@@ -6,10 +6,11 @@
 # This code is Copyright 2019 - 2023 Absolute Performance, Inc, and 2024 - 2025
 # ProCern Technology Solutions.
 # It is written and maintained by Taylor C. Richberger <taylor.richberger@procern.com>
+from typing import Optional
 
 import os
 
-if (os.uname().sysname.lower() == 'linux' or os.uname().sysname.lower() == 'freebsd') and os.environ.get('READTHEDOCS', 'false').lower() != 'true':
+if (os.uname().sysname.lower() in {'linux', 'freebsd'}) and os.environ.get('READTHEDOCS', 'false').lower() != 'true':
     import ctypes
     import ctypes.util
 
@@ -23,12 +24,17 @@ if (os.uname().sysname.lower() == 'linux' or os.uname().sysname.lower() == 'free
                 # name follows, and is of a variable size
             ]
 
-    def load_inotify_lib():
+    def load_inotify_lib() -> Optional[str]:
         libc_path = ctypes.util.find_library("c")
         if libc_path:
             libc = ctypes.CDLL(libc_path)
             if hasattr(libc, "inotify_init"):
                 return libc_path
+
+        # Static libc
+        static_libc = ctypes.CDLL(None)
+        if hasattr(static_libc, "inotify_init"):
+            return None
 
         # Fallback: FreeBSD <= 14
         inotify_path = ctypes.util.find_library("inotify")
