@@ -21,7 +21,7 @@ from warnings import warn
 import weakref
 from weakref import ReferenceType
 from asyncio import Future
-import select
+import selectors
 from collections import deque
 
 # Python 3.7 suggests get_running_loop for library code
@@ -411,11 +411,11 @@ class Inotify:
         full-sized.
 
     :param sync_timeout: If this is not None, then sync_get will wait on an
-        epoll call for that long, and return None on a timeout.  Normal
+        selector call for that long, and return None on a timeout.  Normal
         iteration will also exit on a timeout.
     '''
 
-    __slots__ = ('_fd', '_watches', '_events', '_epoll', '_sync_timeout', '_cache_size', '__weakref__')
+    __slots__ = ('_fd', '_watches', '_events', '_selector', '_sync_timeout', '_cache_size', '__weakref__')
 
     def __init__(self,
                  flags: InitFlags = InitFlags.CLOEXEC | InitFlags.NONBLOCK,
@@ -429,8 +429,8 @@ class Inotify:
         self._watches: Dict[int, Watch] = {}
 
         self._events: List[Event] = []
-        self._epoll: select.epoll = select.epoll()
-        self._epoll.register(fd, select.EPOLLIN)
+        self._selector: selectors.DefaultSelector = selectors.DefaultSelector()
+        self._selector.register(fd, selectors.EVENT_READ)
         self.sync_timeout = sync_timeout
 
     @property
@@ -537,7 +537,7 @@ class Inotify:
         '''
         self.sync_timeout = None
         if self._fd is not None:
-            self._epoll.close()
+            self._selector.close()
             os.close(self._fd)
             self._fd = None
 
@@ -641,7 +641,7 @@ class Inotify:
         '''
         if not self._events:
             if self.sync_timeout is not None:
-                if not self._epoll.poll(self.sync_timeout, 1):
+                if not self._selector.poll(self.sync_timeout, 1):
                     return None
             future = _FakeFuture()
             self._get(future)
