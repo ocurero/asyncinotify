@@ -60,15 +60,15 @@ class InitFlags(IntFlag):
 
     __slots__ = ()
 
-    #: Set the close-on-exec (FD_CLOEXEC) flag on the new file descriptor.  See
-    #: the description of the O_CLOEXEC flag in  open(2)  for  reasons why this
+    #: Set the close-on-exec (FD_CLOEXEC) flag on the new file descriptor if it exists.
+    #: See the description of the O_CLOEXEC flag in  open(2)  for  reasons why this
     #: may be useful.
-    CLOEXEC = os.O_CLOEXEC
+    CLOEXEC = getattr(os, 'O_CLOEXEC', 0)
 
-    #: Set the O_NONBLOCK file status flag on the open file description (see
+    #: Set the O_NONBLOCK file status flag on the open file description if it exists (see
     #: open(2)) referred to by the new file descriptor.  Using this flag saves
     #: extra calls to fcntl(2) to achieve the same result.
-    NONBLOCK = os.O_NONBLOCK
+    NONBLOCK = getattr(os, 'O_CLOEXEC', 0)
 
 
 class Mask(IntFlag):
