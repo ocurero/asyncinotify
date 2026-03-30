@@ -641,7 +641,7 @@ class Inotify:
         '''
         if not self._events:
             if self.sync_timeout is not None:
-                if not self._selector.poll(self.sync_timeout, 1):
+                if not self._selector.select(self.sync_timeout):
                     return None
             future = _FakeFuture()
             self._get(future)
